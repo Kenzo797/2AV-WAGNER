@@ -1,18 +1,20 @@
-from model.user import register_user, validate_login
+from model.user import User
 
-def register_new_user():
-    username = input("\nEnter a new username: ")
-    password = input("Enter a password: ")
-    register_user(username, password)
-    print("\nUser successfully registered!")
+class UserManager:
+    def __init__(self):
+        self.user_model = User()
 
-def login_user():
-    username = input("\nEnter your username: ")
-    password = input("Enter your password: ")
+    def register_user(self):
+        username = input("\nEnter a username: ")
+        password = input("Enter a password: ")
+        self.user_model.create_user(username, password)
 
-    if validate_login(username, password):
-        print(f"\nLogin successful! Welcome, {username}.")
-        return True
-    else:
-        print("\nIncorrect username or password. Please try again.")
-        return False
+    def login_user(self):
+        username = input("\nEnter your username: ")
+        password = input("Enter your password: ")
+        if self.user_model.authenticate_user(username, password):
+            print("\nLogin successful!")
+            return True
+        else:
+            print("\nInvalid username or password.")
+            return False

@@ -1,26 +1,49 @@
-from db.database import connect_database
+from db.connection import DatabaseConnection
 
-def add_game(title, price):
-    
-    conn = connect_database()
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO games (title, price) VALUES (?, ?)', (title, price))
-    conn.commit()
-    conn.close()
+class Game:
+    def __init__(self):
+        self.db = DatabaseConnection()
 
-def list_games():
-    
-    conn = connect_database()
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM games')
-    games = cursor.fetchall()
-    conn.close()
-    return games
+    def add_game(self, title, price):
+        connection = self.db.connect()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                query = "INSERT INTO games (title, price) VALUES (%s, %s)"
+                cursor.execute(query, (title, price))
+                connection.commit()
+            except Exception as e:
+                print(f"Error adding game: {e}")
+            finally:
+                cursor.close()
+                connection.close()
 
-def delete_game(game_id):
-    
-    conn = connect_database()
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM games WHERE id = ?', (game_id,))
-    conn.commit()
-    conn.close()
+    def list_games(self):
+        connection = self.db.connect()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                query = "SELECT * FROM games"
+                cursor.execute(query)
+                games = cursor.fetchall()
+                return games
+            except Exception as e:
+                print(f"Error listing games: {e}")
+                return []
+            finally:
+                cursor.close()
+                connection.close()
+
+    def delete_game(self, game_id):
+        connection = self.db.connect()
+        if connection:
+            try:
+                cursor = connection.cursor()
+                query = "DELETE FROM games WHERE id = %s"
+                cursor.execute(query, (game_id,))
+                connection.commit()
+            except Exception as e:
+                print(f"Error deleting game: {e}")
+            finally:
+                cursor.close()
+                connection.close()
